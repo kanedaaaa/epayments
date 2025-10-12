@@ -3,29 +3,12 @@ import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma.js";
 import type { Merchant } from "../generated/prisma/index.js";
 import { AppError } from "../lib/AppError.js";
-
-interface SignupData {
-  name: string;
-  email: string;
-  password: string;
-  webhookUrl?: string;
-}
-
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface UpdateData {
-  name?: string;
-  webhookUrl?: string;
-  isActive?: boolean;
-}
-
-interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
+import type {
+  SignupData,
+  LoginData,
+  UpdateData,
+  AuthTokens,
+} from "../types/global.js";
 
 class MerchantService {
   private readonly JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
