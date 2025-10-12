@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Merchant {
+  id          String    @id @default(cuid())
+  name        String
+  email       String    @unique
+  apiKey      String    @unique
+  webhookUrl  String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  payments    Payment[]
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  merchantId      String
+  merchant        Merchant      @relation(fields: [merchantId], references: [id])
+  
+  amount          Decimal       @db.Decimal(20, 8)
+  currency        String        // BTC, ETH, USDT, etc.
+  status          PaymentStatus @default(PENDING)
+  
+  customerEmail   String?
+  customerName    String?
+  
+  walletAddress   String?
+  txHash          String?       @unique
+  
+  expiresAt       DateTime
+  completedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  
+  @@index([merchantId])
+  @@index([status])
+  @@index([txHash])
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+  REFUNDED
+}
