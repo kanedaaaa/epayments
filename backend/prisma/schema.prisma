@@ -12,45 +12,44 @@ model Merchant {
   id          String    @id @default(cuid())
   name        String
   email       String    @unique
-  apiKey      String    @unique
   webhookUrl  String?
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   
-  payments    Payment[]
+  apiKeys     ApiKey[]
+  refreshTokens RefreshToken[]
 }
 
-model Payment {
-  id              String        @id @default(cuid())
-  merchantId      String
-  merchant        Merchant      @relation(fields: [merchantId], references: [id])
+model ApiKey {
+  id          String    @id @default(cuid())
+  merchantId  String
+  merchant    Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
   
-  amount          Decimal       @db.Decimal(20, 8)
-  currency        String        // BTC, ETH, USDT, etc.
-  status          PaymentStatus @default(PENDING)
-  
-  customerEmail   String?
-  customerName    String?
-  
-  walletAddress   String?
-  txHash          String?       @unique
-  
-  expiresAt       DateTime
-  completedAt     DateTime?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  key         String    @unique
+  name        String?
+  isActive    Boolean   @default(true)
+  expiresAt   DateTime?
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
   
   @@index([merchantId])
-  @@index([status])
-  @@index([txHash])
+  @@index([key])
 }
 
-enum PaymentStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-  EXPIRED
-  REFUNDED
+model RefreshToken {
+  id          String    @id @default(cuid())
+  merchantId  String
+  merchant    Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  
+  token       String    @unique
+  expiresAt   DateTime
+  isRevoked   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
+  
+  @@index([merchantId])
+  @@index([token])
 }
+
