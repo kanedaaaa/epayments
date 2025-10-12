@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma.js";
 import type { Merchant } from "../generated/prisma/index.js";
+import { AppError } from "../lib/AppError.js";
 
 interface SignupData {
   name: string;
@@ -28,7 +29,8 @@ interface AuthTokens {
 
 class MerchantService {
   private readonly JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-  private readonly JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "your-refresh-secret-key";
+  private readonly JWT_REFRESH_SECRET =
+    process.env.JWT_REFRESH_SECRET || "your-refresh-secret-key";
   private readonly ACCESS_TOKEN_EXPIRY = "15m";
   private readonly REFRESH_TOKEN_EXPIRY = "7d";
   private readonly SALT_ROUNDS = 10;
@@ -57,10 +59,16 @@ class MerchantService {
     });
   }
 
-  public async signup(data: SignupData): Promise<{ merchant: Omit<Merchant, "password">; tokens: AuthTokens }> {
+  public async signup(
+    data: SignupData
+  ): Promise<{ merchant: Omit<Merchant, "password">; tokens: AuthTokens }> {
     const existingMerchant = await this.getByEmail(data.email);
     if (existingMerchant) {
-      throw new Error("Merchant with this email already exists");
+      throw new AppError(
+        "A merchant with this email already exists",
+        409,
+        `Duplicate merchant signup attempt: ${data.email}`
+      );
     }
 
     const hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS);
@@ -89,19 +97,27 @@ class MerchantService {
     return { merchant, tokens };
   }
 
-  public async login(data: LoginData): Promise<{ merchant: Omit<Merchant, "password">; tokens: AuthTokens }> {
+  public async login(
+    data: LoginData
+  ): Promise<{ merchant: Omit<Merchant, "password">; tokens: AuthTokens }> {
     const merchant = await this.getByEmail(data.email);
     if (!merchant) {
-      throw new Error("Invalid credentials");
+      throw new AppError("Invalid credentials", 401);
     }
 
     if (!merchant.isActive) {
-      throw new Error("Merchant account is inactive");
+      throw new AppError(
+        "Your account is inactive. Please contact support.",
+        403
+      );
     }
 
-    const isPasswordValid = await bcrypt.compare(data.password, merchant.password);
+    const isPasswordValid = await bcrypt.compare(
+      data.password,
+      merchant.password
+    );
     if (!isPasswordValid) {
-      throw new Error("Invalid credentials");
+      throw new AppError("Invalid credentials", 401);
     }
 
     const tokens = await this.generateTokens(merchant.id);
@@ -111,7 +127,10 @@ class MerchantService {
     return { merchant: merchantWithoutPassword, tokens };
   }
 
-  public async update(id: string, data: UpdateData): Promise<Omit<Merchant, "password">> {
+  public async update(
+    id: string,
+    data: UpdateData
+  ): Promise<Omit<Merchant, "password">> {
     const merchant = await prisma.merchant.update({
       where: { id },
       data,
@@ -132,19 +151,26 @@ class MerchantService {
 
   public async refreshAccessToken(refreshToken: string): Promise<AuthTokens> {
     try {
-      const decoded = jwt.verify(refreshToken, this.JWT_REFRESH_SECRET) as { merchantId: string };
+      const decoded = jwt.verify(refreshToken, this.JWT_REFRESH_SECRET) as {
+        merchantId: string;
+      };
 
       const storedToken = await prisma.refreshToken.findUnique({
         where: { token: refreshToken },
       });
 
-      if (!storedToken || storedToken.isRevoked || storedToken.expiresAt < new Date()) {
-        throw new Error("Invalid or expired refresh token");
+      if (
+        !storedToken ||
+        storedToken.isRevoked ||
+        storedToken.expiresAt < new Date()
+      ) {
+        throw new AppError("Invalid or expired refresh token", 401);
       }
 
       return await this.generateTokens(decoded.merchantId);
     } catch (error) {
-      throw new Error("Invalid refresh token");
+      if (error instanceof AppError) throw error;
+      throw new AppError("Invalid refresh token", 401);
     }
   }
 
@@ -160,10 +186,12 @@ class MerchantService {
 
   public verifyAccessToken(token: string): { merchantId: string } {
     try {
-      const decoded = jwt.verify(token, this.JWT_SECRET) as { merchantId: string };
+      const decoded = jwt.verify(token, this.JWT_SECRET) as {
+        merchantId: string;
+      };
       return decoded;
     } catch (error) {
-      throw new Error("Invalid access token");
+      throw new AppError("Invalid access token", 401);
     }
   }
 
