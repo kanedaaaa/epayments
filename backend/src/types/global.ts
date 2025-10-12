@@ -1,3 +1,5 @@
+import type { Request } from "express";
+
 export interface SignupData {
   name: string;
   email: string;
@@ -19,4 +21,8 @@ export interface UpdateData {
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface AuthRequest extends Request {
+  merchantId?: string;
 }

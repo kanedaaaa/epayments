@@ -1,10 +1,7 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Response, NextFunction } from "express";
 import { AppError } from "../lib/AppError.js";
 import merchantService from "../services/merchant.service.js";
-
-export interface AuthRequest extends Request {
-  merchantId?: string;
-}
+import type { AuthRequest } from "../types/global.js";
 
 export const authenticateJWT = async (
   req: AuthRequest,
