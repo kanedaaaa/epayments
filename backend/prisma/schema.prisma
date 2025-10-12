@@ -9,47 +9,47 @@ datasource db {
 }
 
 model Merchant {
-  id          String    @id @default(cuid())
-  name        String
-  email       String    @unique
-  webhookUrl  String?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  apiKeys     ApiKey[]
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  password   String   @unique // hash
+  webhookUrl String?
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  apiKeys       ApiKey[]
   refreshTokens RefreshToken[]
 }
 
 model ApiKey {
-  id          String    @id @default(cuid())
-  merchantId  String
-  merchant    Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
-  
-  key         String    @unique
-  name        String?
-  isActive    Boolean   @default(true)
-  expiresAt   DateTime?
-  lastUsedAt  DateTime?
-  createdAt   DateTime  @default(now())
-  revokedAt   DateTime?
-  
+  id         String   @id @default(cuid())
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  key        String    @unique
+  name       String?
+  isActive   Boolean   @default(true)
+  expiresAt  DateTime?
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  revokedAt  DateTime?
+
   @@index([merchantId])
   @@index([key])
 }
 
 model RefreshToken {
-  id          String    @id @default(cuid())
-  merchantId  String
-  merchant    Merchant  @relation(fields: [merchantId], references: [id], onDelete: Cascade)
-  
-  token       String    @unique
-  expiresAt   DateTime
-  isRevoked   Boolean   @default(false)
-  createdAt   DateTime  @default(now())
-  revokedAt   DateTime?
-  
+  id         String   @id @default(cuid())
+  merchantId String
+  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  token     String    @unique
+  expiresAt DateTime
+  isRevoked Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+
   @@index([merchantId])
   @@index([token])
 }
-
