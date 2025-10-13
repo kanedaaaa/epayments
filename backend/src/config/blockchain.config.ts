@@ -5,7 +5,7 @@ export const NETWORK: NetworkType =
 
 export const ETH_RPC_URL =
   NETWORK === "mainnet"
-    ? process.env.ETH_MAINNET_RPC || "https://eth-mainnet.g.alchemy.com/v2/your-api-key"
-    : process.env.ETH_TESTNET_RPC || "https://eth-sepolia.g.alchemy.com/v2/your-api-key";
+    ? process.env.ETH_MAINNET_RPC || ""
+    : process.env.ETH_TESTNET_RPC || "";
 
 export const SUPPORTED_CURRENCIES = ["ETH"];
