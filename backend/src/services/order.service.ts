@@ -2,6 +2,7 @@ import { prisma } from "../lib/prisma.js";
 import { AppError } from "../lib/AppError.js";
 import evmService from "./evm.service.js";
 import type { Order } from "../generated/prisma/index.js";
+import { SUPPORTED_CURRENCIES } from "../config/blockchain.config.js";
 
 interface CreateOrderData {
   amount: string;
@@ -10,7 +11,7 @@ interface CreateOrderData {
 }
 
 class OrderService {
-  private readonly SUPPORTED_CURRENCIES = ["ETH", "MATIC", "BNB"];
+  private readonly SUPPORTED_CURRENCIES = SUPPORTED_CURRENCIES;
   private readonly DEFAULT_EXPIRY_MINUTES = 30;
 
   public async createOrder(

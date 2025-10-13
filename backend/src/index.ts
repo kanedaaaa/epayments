@@ -6,6 +6,7 @@ import apiKeyRouter from "./routers/apiKey.router.js";
 import orderRouter from "./routers/order.router.js";
 import publicOrderRouter from "./routers/publicOrder.router.js";
 import { errorHandler } from "./middleware/error.middleware.js";
+import { NETWORK, SUPPORTED_CURRENCIES } from "./config/blockchain.config.js";
 
 dotenv.config();
 const app = express();
@@ -19,7 +20,12 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.get("/health", (_req: Request, res: Response) => {
-  res.json({ status: "OK", timestamp: new Date().toISOString() });
+  res.json({ 
+    status: "OK", 
+    timestamp: new Date().toISOString(),
+    network: NETWORK,
+    supportedCurrencies: SUPPORTED_CURRENCIES,
+  });
 });
 
 // Dashboard Routes (JWT auth)
