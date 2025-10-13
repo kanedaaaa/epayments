@@ -3,11 +3,7 @@ import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma.js";
 import type { Merchant } from "../generated/prisma/index.js";
 import { AppError } from "../lib/AppError.js";
-import type {
-  SignupData,
-  LoginData,
-  UpdateData,
-} from "../types/global.js";
+import type { SignupData, LoginData, UpdateData } from "../types/global.js";
 
 class MerchantService {
   private readonly JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
