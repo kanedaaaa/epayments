@@ -2,6 +2,7 @@ import express from "express";
 import type { Request, Response } from "express";
 import * as dotenv from "dotenv";
 import merchantRouter from "./routers/merchant.router.js";
+import apiKeyRouter from "./routers/apiKey.router.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.get("/health", (_req: Request, res: Response) => {
 
 // Routes
 app.use("/api/merchants", merchantRouter);
+app.use("/api/keys", apiKeyRouter);
 
 // Error handler (must be registered AFTER all routes)
 app.use(errorHandler);
