@@ -3,6 +3,8 @@ import type { Request, Response } from "express";
 import * as dotenv from "dotenv";
 import merchantRouter from "./routers/merchant.router.js";
 import apiKeyRouter from "./routers/apiKey.router.js";
+import orderRouter from "./routers/order.router.js";
+import publicOrderRouter from "./routers/publicOrder.router.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 dotenv.config();
@@ -20,9 +22,13 @@ app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
-// Routes
+// Dashboard Routes (JWT auth)
 app.use("/api/merchants", merchantRouter);
 app.use("/api/keys", apiKeyRouter);
+app.use("/api/orders", orderRouter);
+
+// Widget Routes (API key auth)
+app.use("/api/widget/orders", publicOrderRouter);
 
 // Error handler (must be registered AFTER all routes)
 app.use(errorHandler);
