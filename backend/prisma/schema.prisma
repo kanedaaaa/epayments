@@ -19,6 +19,7 @@ model Merchant {
   updatedAt  DateTime @updatedAt
 
   apiKeys ApiKey[]
+  orders  Order[]
 }
 
 model ApiKey {
@@ -36,4 +37,27 @@ model ApiKey {
 
   @@index([merchantId])
   @@index([key])
+}
+
+model Order {
+  id             String   @id @default(cuid())
+  merchantId     String
+  merchant       Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  amount         String   // Store as string to avoid precision issues
+  currency       String   // "ETH", "MATIC", "BNB"
+  status         String   @default("pending") // "pending", "paid", "expired", "failed"
+
+  depositAddress String   @unique // Generated temp wallet address
+  privateKey     String   // TODO: Encrypt this before storing!
+  txHash         String?  // Transaction hash when paid
+
+  expiresAt      DateTime
+  paidAt         DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([merchantId])
+  @@index([status])
+  @@index([depositAddress])
 }
