@@ -18,11 +18,6 @@ export interface UpdateData {
   isActive?: boolean;
 }
 
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
 export interface AuthRequest extends Request {
   merchantId?: string;
 }

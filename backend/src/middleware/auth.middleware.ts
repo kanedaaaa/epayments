@@ -1,7 +1,20 @@
 import type { Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
 import { AppError } from "../lib/AppError.js";
-import merchantService from "../services/merchant.service.js";
 import type { AuthRequest } from "../types/global.js";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+
+const verifyAccessToken = (token: string): { merchantId: string } => {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as {
+      merchantId: string;
+    };
+    return decoded;
+  } catch (error) {
+    throw new AppError("Invalid access token", 401);
+  }
+};
 
 export const authenticateJWT = async (
   req: AuthRequest,
@@ -21,7 +34,7 @@ export const authenticateJWT = async (
     }
 
     const token = parts[1]!;
-    const decoded = merchantService.verifyAccessToken(token);
+    const decoded = verifyAccessToken(token);
 
     req.merchantId = decoded.merchantId;
     next();
@@ -46,7 +59,7 @@ export const optionalAuth = async (
       const parts = authHeader.split(" ");
       if (parts.length === 2 && parts[0] === "Bearer") {
         const token = parts[1]!;
-        const decoded = merchantService.verifyAccessToken(token);
+        const decoded = verifyAccessToken(token);
         req.merchantId = decoded.merchantId;
       }
     }

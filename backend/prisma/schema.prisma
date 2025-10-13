@@ -18,8 +18,7 @@ model Merchant {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  apiKeys       ApiKey[]
-  refreshTokens RefreshToken[]
+  apiKeys ApiKey[]
 }
 
 model ApiKey {
@@ -37,19 +36,4 @@ model ApiKey {
 
   @@index([merchantId])
   @@index([key])
-}
-
-model RefreshToken {
-  id         String   @id @default(cuid())
-  merchantId String
-  merchant   Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
-
-  token     String    @unique
-  expiresAt DateTime
-  isRevoked Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  revokedAt DateTime?
-
-  @@index([merchantId])
-  @@index([token])
 }

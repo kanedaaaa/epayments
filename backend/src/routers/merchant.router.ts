@@ -32,32 +32,6 @@ router.post("/login", async (req: AuthRequest, res: Response, next: NextFunction
   }
 });
 
-router.post("/refresh", async (req: AuthRequest, res: Response, next: NextFunction) => {
-  try {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-      throw new AppError("Refresh token is required", 400);
-    }
-    const tokens = await merchantService.refreshAccessToken(refreshToken);
-    res.status(200).json(tokens);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.post("/logout", async (req: AuthRequest, res: Response, next: NextFunction) => {
-  try {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-      throw new AppError("Refresh token is required", 400);
-    }
-    await merchantService.revokeRefreshToken(refreshToken);
-    res.status(200).json({ message: "Logged out successfully" });
-  } catch (error) {
-    next(error);
-  }
-});
-
 router.get("/me", authenticateJWT, async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     if (!req.merchantId) {

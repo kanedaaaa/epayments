@@ -7,15 +7,11 @@ import type {
   SignupData,
   LoginData,
   UpdateData,
-  AuthTokens,
 } from "../types/global.js";
 
 class MerchantService {
   private readonly JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-  private readonly JWT_REFRESH_SECRET =
-    process.env.JWT_REFRESH_SECRET || "your-refresh-secret-key";
-  private readonly ACCESS_TOKEN_EXPIRY = "15m";
-  private readonly REFRESH_TOKEN_EXPIRY = "7d";
+  private readonly ACCESS_TOKEN_EXPIRY = "30d";
   private readonly SALT_ROUNDS = 10;
 
   public async getByID(id: string): Promise<Omit<Merchant, "password"> | null> {
@@ -44,7 +40,7 @@ class MerchantService {
 
   public async signup(
     data: SignupData
-  ): Promise<{ merchant: Omit<Merchant, "password">; tokens: AuthTokens }> {
+  ): Promise<{ merchant: Omit<Merchant, "password">; accessToken: string }> {
     const existingMerchant = await this.getByEmail(data.email);
     if (existingMerchant) {
       throw new AppError(
@@ -75,14 +71,14 @@ class MerchantService {
       },
     });
 
-    const tokens = await this.generateTokens(merchant.id);
+    const accessToken = this.generateAccessToken(merchant.id);
 
-    return { merchant, tokens };
+    return { merchant, accessToken };
   }
 
   public async login(
     data: LoginData
-  ): Promise<{ merchant: Omit<Merchant, "password">; tokens: AuthTokens }> {
+  ): Promise<{ merchant: Omit<Merchant, "password">; accessToken: string }> {
     const merchant = await this.getByEmail(data.email);
     if (!merchant) {
       throw new AppError("Invalid credentials", 401);
@@ -103,11 +99,11 @@ class MerchantService {
       throw new AppError("Invalid credentials", 401);
     }
 
-    const tokens = await this.generateTokens(merchant.id);
+    const accessToken = this.generateAccessToken(merchant.id);
 
     const { password, ...merchantWithoutPassword } = merchant;
 
-    return { merchant: merchantWithoutPassword, tokens };
+    return { merchant: merchantWithoutPassword, accessToken };
   }
 
   public async update(
@@ -132,73 +128,10 @@ class MerchantService {
     return merchant;
   }
 
-  public async refreshAccessToken(refreshToken: string): Promise<AuthTokens> {
-    try {
-      const decoded = jwt.verify(refreshToken, this.JWT_REFRESH_SECRET) as {
-        merchantId: string;
-      };
-
-      const storedToken = await prisma.refreshToken.findUnique({
-        where: { token: refreshToken },
-      });
-
-      if (
-        !storedToken ||
-        storedToken.isRevoked ||
-        storedToken.expiresAt < new Date()
-      ) {
-        throw new AppError("Invalid or expired refresh token", 401);
-      }
-
-      return await this.generateTokens(decoded.merchantId);
-    } catch (error) {
-      if (error instanceof AppError) throw error;
-      throw new AppError("Invalid refresh token", 401);
-    }
-  }
-
-  public async revokeRefreshToken(refreshToken: string): Promise<void> {
-    await prisma.refreshToken.update({
-      where: { token: refreshToken },
-      data: {
-        isRevoked: true,
-        revokedAt: new Date(),
-      },
-    });
-  }
-
-  public verifyAccessToken(token: string): { merchantId: string } {
-    try {
-      const decoded = jwt.verify(token, this.JWT_SECRET) as {
-        merchantId: string;
-      };
-      return decoded;
-    } catch (error) {
-      throw new AppError("Invalid access token", 401);
-    }
-  }
-
-  private async generateTokens(merchantId: string): Promise<AuthTokens> {
-    const accessToken = jwt.sign({ merchantId }, this.JWT_SECRET, {
+  private generateAccessToken(merchantId: string): string {
+    return jwt.sign({ merchantId }, this.JWT_SECRET, {
       expiresIn: this.ACCESS_TOKEN_EXPIRY,
     });
-
-    const refreshToken = jwt.sign({ merchantId }, this.JWT_REFRESH_SECRET, {
-      expiresIn: this.REFRESH_TOKEN_EXPIRY,
-    });
-
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await prisma.refreshToken.create({
-      data: {
-        merchantId,
-        token: refreshToken,
-        expiresAt,
-      },
-    });
-
-    return { accessToken, refreshToken };
   }
 }
 
