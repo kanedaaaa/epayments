@@ -22,20 +22,24 @@ export const authenticateJWT = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const authHeader = req.headers.authorization;
+    // Try to get token from cookie first, then fall back to Authorization header
+    let token = req.cookies?.accessToken;
 
-    if (!authHeader) {
-      throw new AppError("Authorization header is required", 401);
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader) {
+        const parts = authHeader.split(" ");
+        if (parts.length === 2 && parts[0] === "Bearer") {
+          token = parts[1];
+        }
+      }
     }
 
-    const parts = authHeader.split(" ");
-    if (parts.length !== 2 || parts[0] !== "Bearer") {
-      throw new AppError("Invalid authorization header format", 401);
+    if (!token) {
+      throw new AppError("Authentication required", 401);
     }
 
-    const token = parts[1]!;
     const decoded = verifyAccessToken(token);
-
     req.merchantId = decoded.merchantId;
     next();
   } catch (error) {
@@ -53,15 +57,22 @@ export const optionalAuth = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const authHeader = req.headers.authorization;
+    // Try to get token from cookie first, then fall back to Authorization header
+    let token = req.cookies?.accessToken;
 
-    if (authHeader) {
-      const parts = authHeader.split(" ");
-      if (parts.length === 2 && parts[0] === "Bearer") {
-        const token = parts[1]!;
-        const decoded = verifyAccessToken(token);
-        req.merchantId = decoded.merchantId;
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader) {
+        const parts = authHeader.split(" ");
+        if (parts.length === 2 && parts[0] === "Bearer") {
+          token = parts[1];
+        }
       }
+    }
+
+    if (token) {
+      const decoded = verifyAccessToken(token);
+      req.merchantId = decoded.merchantId;
     }
 
     next();

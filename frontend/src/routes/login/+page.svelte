@@ -1,19 +1,33 @@
+<script lang="ts">
+  import { enhance } from '$app/forms';
+  
+  let { form } = $props();
+</script>
+
 <div class="min-h-screen flex items-center justify-center p-4">
   <div class="w-full max-w-md">
     <!-- Login Card -->
     <div class="retro-border-spaced p-8">
       <h1 class="text-4xl text-center mb-8 tracking-wider">LOGIN</h1>
       
-      <form class="space-y-6">
-        <!-- Username Field -->
+      {#if form?.error}
+        <div class="mb-6 p-4 bg-red-100 border-2 border-red-500 text-red-700">
+          <p class="font-bold">ERROR:</p>
+          <p>{form.error}</p>
+        </div>
+      {/if}
+      
+      <form method="POST" use:enhance class="space-y-6">
+        <!-- Email Field -->
         <div>
-          <label for="username" class="block text-sm font-bold mb-2 tracking-wide uppercase">Username</label>
+          <label for="email" class="block text-sm font-bold mb-2 tracking-wide uppercase">Email</label>
           <input
-            type="text"
-            id="username"
-            name="username"
+            type="email"
+            id="email"
+            name="email"
+            required
             class="w-full px-4 py-3 bg-white border-2 border-black text-black focus:outline-none focus:border-[var(--color-accent-blue)]"
-            placeholder="enter_username"
+            placeholder="enter_email"
           />
         </div>
         
@@ -24,6 +38,7 @@
             type="password"
             id="password"
             name="password"
+            required
             class="w-full px-4 py-3 bg-white border-2 border-black text-black focus:outline-none focus:border-[var(--color-accent-blue)]"
             placeholder="enter_password"
           />

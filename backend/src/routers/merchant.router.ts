@@ -16,7 +16,17 @@ router.post("/signup", async (req: AuthRequest, res: Response, next: NextFunctio
   try {
     const data: SignupData = req.body;
     const result = await merchantService.signup(data);
-    res.status(201).json(result);
+    
+    // Set JWT in httpOnly cookie
+    res.cookie("accessToken", result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+    
+    // Return merchant data without token
+    res.status(201).json({ merchant: result.merchant });
   } catch (error) {
     next(error);
   }
@@ -26,7 +36,17 @@ router.post("/login", async (req: AuthRequest, res: Response, next: NextFunction
   try {
     const data: LoginData = req.body;
     const result = await merchantService.login(data);
-    res.status(200).json(result);
+    
+    // Set JWT in httpOnly cookie
+    res.cookie("accessToken", result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+    
+    // Return merchant data without token
+    res.status(200).json({ merchant: result.merchant });
   } catch (error) {
     next(error);
   }
@@ -63,5 +83,10 @@ router.patch(
     }
   }
 );
+
+router.post("/logout", (_req: AuthRequest, res: Response) => {
+  res.clearCookie("accessToken");
+  res.status(200).json({ message: "Logged out successfully" });
+});
 
 export default router;

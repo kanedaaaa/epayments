@@ -1,6 +1,8 @@
 import express from "express";
 import type { Request, Response } from "express";
 import * as dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import merchantRouter from "./routers/merchant.router.js";
 import apiKeyRouter from "./routers/apiKey.router.js";
 import orderRouter from "./routers/order.router.js";
@@ -12,8 +14,15 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CORS configuration
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  credentials: true,
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.get("/", (_req: Request, res: Response) => {
   res.json({ message: "Welcome to ePayment API" });

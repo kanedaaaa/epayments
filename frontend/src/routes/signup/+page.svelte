@@ -1,42 +1,63 @@
-<div class="min-h-screen flex items-center justify-center p-8">
+<script lang="ts">
+	import { enhance } from '$app/forms';
+
+	let { form } = $props();
+</script>
+
+<div class="flex min-h-screen items-center justify-center p-8">
 	<div class="w-full max-w-md">
 		<!-- Signup Card -->
 		<div class="retro-border-spaced bg-[var(--color-foreground)] p-8">
-			<h1 class="text-4xl text-center mb-8 tracking-wider">SIGN UP</h1>
+			<h1 class="mb-8 text-center text-4xl tracking-wider">SIGN UP</h1>
 
-			<form class="space-y-6">
+			{#if form?.error}
+				<div class="mb-6 border-2 border-red-500 bg-red-100 p-4 text-red-700">
+					<p class="font-bold">ERROR:</p>
+					<p>{form.error}</p>
+				</div>
+			{/if}
+
+			<form method="POST" use:enhance class="space-y-6">
 				<!-- Email Field -->
 				<div>
-					<label for="email" class="block text-sm font-bold mb-2 tracking-wide uppercase">Email</label>
+					<label for="email" class="mb-2 block text-sm font-bold uppercase tracking-wide"
+						>Email</label
+					>
 					<input
 						type="email"
 						id="email"
 						name="email"
-						class="w-full px-4 py-3 bg-white border-2 border-black text-black focus:outline-none focus:border-[var(--color-accent-blue)]"
+						required
+						class="w-full border-2 border-black bg-white px-4 py-3 text-black focus:border-[var(--color-accent-blue)] focus:outline-none"
 						placeholder="enter_email"
 					/>
 				</div>
 
-				<!-- Username Field -->
+				<!-- Name Field -->
 				<div>
-					<label for="username" class="block text-sm font-bold mb-2 tracking-wide uppercase">Username</label>
+					<label for="name" class="mb-2 block text-sm font-bold uppercase tracking-wide">Name</label
+					>
 					<input
 						type="text"
-						id="username"
-						name="username"
-						class="w-full px-4 py-3 bg-white border-2 border-black text-black focus:outline-none focus:border-[var(--color-accent-blue)]"
-						placeholder="choose_username"
+						id="name"
+						name="name"
+						required
+						class="w-full border-2 border-black bg-white px-4 py-3 text-black focus:border-[var(--color-accent-blue)] focus:outline-none"
+						placeholder="enter_name"
 					/>
 				</div>
 
 				<!-- Password Field -->
 				<div>
-					<label for="password" class="block text-sm font-bold mb-2 tracking-wide uppercase">Password</label>
+					<label for="password" class="mb-2 block text-sm font-bold uppercase tracking-wide"
+						>Password</label
+					>
 					<input
 						type="password"
 						id="password"
 						name="password"
-						class="w-full px-4 py-3 bg-white border-2 border-black text-black focus:outline-none focus:border-[var(--color-accent-blue)]"
+						required
+						class="w-full border-2 border-black bg-white px-4 py-3 text-black focus:border-[var(--color-accent-blue)] focus:outline-none"
 						placeholder="create_password"
 					/>
 				</div>
@@ -47,7 +68,8 @@
 						type="checkbox"
 						id="terms"
 						name="terms"
-						class="mt-1 w-4 h-4 border-2 border-black"
+						required
+						class="mt-1 h-4 w-4 border-2 border-black"
 					/>
 					<label for="terms" class="text-sm">
 						I agree to the Terms of Service and Privacy Policy
@@ -57,7 +79,7 @@
 				<!-- Sign Up Button -->
 				<button
 					type="submit"
-					class="w-full px-6 py-4 bg-[var(--color-accent-green)] text-white font-bold border-2 border-[var(--color-border)] uppercase tracking-wider"
+					class="w-full border-2 border-[var(--color-border)] bg-[var(--color-accent-green)] px-6 py-4 font-bold uppercase tracking-wider text-white"
 				>
 					[ Create Account ]
 				</button>
@@ -67,11 +89,11 @@
 			<div class="my-8 border-t-2 border-[var(--color-text)] opacity-30"></div>
 
 			<!-- Login Link -->
-			<div class="text-center space-y-4">
+			<div class="space-y-4 text-center">
 				<p class="text-sm tracking-wide">Already have an account?</p>
 				<a
 					href="/login"
-					class="inline-block w-full px-6 py-3 bg-[var(--color-accent-blue)] text-white font-bold border-2 border-[var(--color-border)] uppercase tracking-wider transition-all duration-100 shadow-[6px_6px_0px_0px_rgba(0,0,0,0.4)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.4)]"
+					class="inline-block w-full border-2 border-[var(--color-border)] bg-[var(--color-accent-blue)] px-6 py-3 font-bold uppercase tracking-wider text-white shadow-[6px_6px_0px_0px_rgba(0,0,0,0.4)] transition-all duration-100 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.4)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.4)]"
 				>
 					[ Login ]
 				</a>
