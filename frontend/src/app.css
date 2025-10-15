@@ -12,8 +12,9 @@
 	--color-border: #ffffff;
 
 	/* Custom Fonts */
-	--font-family-main: 'Orbitron', sans-serif;
-	--font-family-logo: 'Quantico', sans-serif;
+	--font-family-body: 'Courier Prime', monospace;
+	--font-family-heading: 'VT323', monospace;
+	--font-family-logo: 'Roboto Mono', monospace;
 
 	/* Border Radius - Always 0 */
 	--radius: 0px;
@@ -25,9 +26,19 @@
 }
 
 body {
-	font-family: var(--font-family-main);
+	font-family: var(--font-family-body);
 	background-color: var(--color-bg);
 	color: var(--color-text);
+}
+
+h1 {
+	font-family: var(--font-family-logo);
+	font-weight: 700;
+}
+
+h2, h3, h4, h5, h6 {
+	font-family: var(--font-family-heading);
+	font-weight: 400;
 }
 
 /* Double Border Component Base */
