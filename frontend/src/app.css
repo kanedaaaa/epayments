@@ -1,3 +1,76 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+@theme {
+	/* Custom Color Scheme - Retro 2000s */
+	--color-bg: #a5a4ce;
+	--color-foreground: #c0c0c0;
+	--color-accent-blue: #3465a4;
+	--color-accent-green: #4a9d5f;
+	--color-text: #000000;
+	--color-border: #ffffff;
+
+	/* Custom Fonts */
+	--font-family-main: 'Orbitron', sans-serif;
+	--font-family-logo: 'Quantico', sans-serif;
+
+	/* Border Radius - Always 0 */
+	--radius: 0px;
+}
+
+/* Global Styles */
+* {
+	border-radius: 0 !important;
+}
+
+body {
+	font-family: var(--font-family-main);
+	background-color: var(--color-bg);
+	color: var(--color-text);
+}
+
+/* Double Border Component Base */
+.retro-border {
+	border: 3px double var(--color-border);
+	padding: 1rem;
+	background-color: var(--color-foreground);
+	box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.4),
+				12px 12px 0px 0px rgba(0, 0, 0, 0.2);
+}
+
+.retro-border-spaced {
+	position: relative;
+	background-color: var(--color-foreground);
+	padding: 1.5rem;
+	box-shadow: 10px 10px 0px 0px rgba(0, 0, 0, 0.5),
+				15px 15px 0px 0px rgba(0, 0, 0, 0.3),
+				20px 20px 0px 0px rgba(0, 0, 0, 0.15);
+}
+
+.retro-border-spaced::before {
+	content: '';
+	position: absolute;
+	top: 0.5rem;
+	left: 0.5rem;
+	right: 0.5rem;
+	bottom: 0.5rem;
+	border: 3px double var(--color-border);
+	pointer-events: none;
+}
+
+/* Button Shadows */
+button {
+	box-shadow: 6px 6px 0px 0px rgba(0, 0, 0, 0.4);
+	transition: all 0.1s ease;
+}
+
+button:hover {
+	transform: translate(2px, 2px);
+	box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.4);
+}
+
+button:active {
+	transform: translate(4px, 4px);
+	box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.4);
+}
