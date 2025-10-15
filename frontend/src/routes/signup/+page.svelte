@@ -4,7 +4,7 @@
 	let { form } = $props();
 </script>
 
-<div class="flex min-h-screen items-center justify-center p-8">
+<div class="fixed inset-0 flex items-center justify-center p-8 pt-28 overflow-hidden">
 	<div class="w-full max-w-md">
 		<!-- Signup Card -->
 		<div class="retro-border-spaced bg-[var(--color-foreground)] p-8">

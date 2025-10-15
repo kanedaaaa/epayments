@@ -4,7 +4,7 @@
   let { form } = $props();
 </script>
 
-<div class="min-h-screen flex items-center justify-center p-4">
+<div class="fixed inset-0 flex items-center justify-center p-4 pt-28 overflow-hidden">
   <div class="w-full max-w-md">
     <!-- Login Card -->
     <div class="retro-border-spaced p-8">

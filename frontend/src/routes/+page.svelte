@@ -1,4 +1,4 @@
-<div class="min-h-screen p-8">
+<div class="fixed inset-0 overflow-y-auto p-8 pt-28">
 	<div class="max-w-4xl mx-auto space-y-6">
 		<!-- Logo/Header -->
 		<div class="retro-border-spaced bg-[var(--color-foreground)] p-8">
