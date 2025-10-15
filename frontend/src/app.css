@@ -36,7 +36,11 @@ h1 {
 	font-weight: 700;
 }
 
-h2, h3, h4, h5, h6 {
+h2,
+h3,
+h4,
+h5,
+h6 {
 	font-family: var(--font-family-heading);
 	font-weight: 400;
 }
@@ -46,17 +50,19 @@ h2, h3, h4, h5, h6 {
 	border: 3px double var(--color-border);
 	padding: 1rem;
 	background-color: var(--color-foreground);
-	box-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 0.4),
-				12px 12px 0px 0px rgba(0, 0, 0, 0.2);
+	box-shadow:
+		8px 8px 0px 0px rgba(0, 0, 0, 0.4),
+		12px 12px 0px 0px rgba(0, 0, 0, 0.2);
 }
 
 .retro-border-spaced {
 	position: relative;
 	background-color: var(--color-foreground);
 	padding: 1.5rem;
-	box-shadow: 10px 10px 0px 0px rgba(0, 0, 0, 0.5),
-				15px 15px 0px 0px rgba(0, 0, 0, 0.3),
-				20px 20px 0px 0px rgba(0, 0, 0, 0.15);
+	box-shadow:
+		10px 10px 0px 0px rgba(0, 0, 0, 0.5),
+		15px 15px 0px 0px rgba(0, 0, 0, 0.3),
+		20px 20px 0px 0px rgba(0, 0, 0, 0.15);
 }
 
 .retro-border-spaced::before {
