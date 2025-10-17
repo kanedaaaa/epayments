@@ -4,11 +4,15 @@ import { prisma } from "../lib/prisma.js";
 import type { Merchant } from "../generated/prisma/index.js";
 import { AppError } from "../lib/AppError.js";
 import type { SignupData, LoginData, UpdateData } from "../types/global.js";
+import crypto from "crypto";
+import { redis } from "../lib/redis.js";
 
 class MerchantService {
   private readonly JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
   private readonly ACCESS_TOKEN_EXPIRY = "30d";
   private readonly SALT_ROUNDS = 10;
+  private readonly RESET_TOKEN_EXPIRY = 3600; // hour
+  private readonly RESET_TOKEN_PREFIX = "reset_token:";
 
   public async getByID(id: string): Promise<Omit<Merchant, "password"> | null> {
     const merchant = await prisma.merchant.findUnique({
@@ -122,6 +126,54 @@ class MerchantService {
     });
 
     return merchant;
+  }
+
+  // 2 FUNCTIONS BELOW ARE WIP
+
+  public async requestPasswordReset(email: string): Promise<string> {
+    const merchant = await this.getByEmail(email);
+
+    if (!merchant) {
+      crypto.randomBytes(32).toString("hex"); // still generate a token  to prevent timing attacks
+      return "reset_requested";
+    }
+
+    if (!merchant.isActive) {
+      throw new AppError(
+        "Your account is inactive. Please contact support",
+        403
+      );
+    }
+
+    const resetToken = crypto.randomBytes(32).toString("hex"); // should i do this 2 times
+
+    const redisKey = `${this.RESET_TOKEN_PREFIX}${resetToken}`;
+    // await redis.setex(redisKey, this.RESET_TOKEN_EXPIRY, merchant.id); // TODO fix
+
+    return resetToken; // TODO send via email
+    // P.S SMTP is prolly blocked on DO
+  }
+
+  public async resetPassword(
+    token: string,
+    newPassword: string
+  ): Promise<void> {
+    const redisKey = `${this.RESET_TOKEN_PREFIX}${token}`;
+
+    const merchantId = await redis.get(redisKey);
+
+    if (!merchantId) {
+      throw new AppError("Invalid or expired reset token (eat a dick)", 400);
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, this.SALT_ROUNDS);
+
+    await prisma.merchant.update({
+      where: { id: merchantId },
+      data: { password: hashedPassword },
+    });
+
+    await redis.del(redisKey);
   }
 
   private generateAccessToken(merchantId: string): string {
