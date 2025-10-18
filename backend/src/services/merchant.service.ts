@@ -148,7 +148,8 @@ class MerchantService {
     const resetToken = crypto.randomBytes(32).toString("hex"); // should i do this 2 times
 
     const redisKey = `${this.RESET_TOKEN_PREFIX}${resetToken}`;
-    // await redis.setex(redisKey, this.RESET_TOKEN_EXPIRY, merchant.id); // TODO fix
+    await redis.setEx(redisKey, this.RESET_TOKEN_EXPIRY, merchant.id); // TODO fix
+    // thing is it doesnt throws error for this one
 
     return resetToken; // TODO send via email
     // P.S SMTP is prolly blocked on DO
