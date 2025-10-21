@@ -130,7 +130,7 @@ class MerchantService {
 
   // 2 FUNCTIONS BELOW ARE WIP
 
-  public async requestPasswordReset(email: string): Promise<string> {
+  public async requestPasswordReset(email: string): Promise<string | void> {
     const merchant = await this.getByEmail(email);
 
     if (!merchant) {
@@ -148,11 +148,12 @@ class MerchantService {
     const resetToken = crypto.randomBytes(32).toString("hex"); // should i do this 2 times
 
     const redisKey = `${this.RESET_TOKEN_PREFIX}${resetToken}`;
-    await redis.setEx(redisKey, this.RESET_TOKEN_EXPIRY, merchant.id); // TODO fix
-    // thing is it doesnt throws error for this one
+    await redis.setEx(redisKey, this.RESET_TOKEN_EXPIRY, merchant.id);
 
-    return resetToken; // TODO send via email
-    // P.S SMTP is prolly blocked on DO
+    // TODO send via email
+    // P.S SMTP is prolly blocked
+
+    console.log(`DEV: reset token: ${resetToken}`);
   }
 
   public async resetPassword(
