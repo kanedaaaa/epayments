@@ -47,37 +47,55 @@ h6 {
   font-family: var(--font-family-logo);
 }
 
-button,
-a.button-like {
-  background-color: var(--color-accent-blue);
-  color: white;
+.button-like {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
   border: 2px double var(--color-border);
-  cursor: pointer;
-  transform: translate(0px, 0px);
   text-transform: uppercase;
+  cursor: pointer;
+  background-color: var(--color-accent-blue);
+  color: white;
   box-shadow: 3px 3px 0px 0px rgba(0, 0, 0, 0.4);
+  transform: translate(0px, 0px);
   transition: all 0.1s ease;
+  text-decoration: none;
 }
 
-@utility button-secondary {
-  background-color: var(--color-accent-green);
-}
-
-@utility button-danger {
-  background-color: #d9534f;
-}
-
-button:hover,
-a.button-like:hover {
+.button-like:hover {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0px 0px rgba(0, 0, 0, 0.4);
 }
 
-button:active,
-a.button-like:active {
+.button-like:active {
   transform: translate(4px, 4px);
   box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 0.4);
+}
+
+.button-primary {
+  background-color: var(--color-accent-blue);
+}
+
+.button-secondary {
+  background-color: var(--color-accent-green);
+}
+
+.button-danger {
+  background-color: #d9534f;
+}
+
+.link-subtle {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: var(--color-accent-blue);
+  text-decoration: underline;
+  text-transform: none;
+}
+
+.link-subtle:hover {
+  filter: brightness(1.1);
 }
 
 @utility brand-border {
