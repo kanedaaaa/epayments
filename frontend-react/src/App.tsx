@@ -1,5 +1,6 @@
 import Navbar from "./components/Navbar";
 import Login from "./pages/login";
+import Signup from "./pages/signup";
 
 export default function App() {
   return (
